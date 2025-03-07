@@ -7,11 +7,40 @@ specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
-  Todo: a
+  User: a
     .model({
-      content: a.string(),
+      gauntletEmail: a.string().required(),
+      role: a.enum(['ADMIN', 'STUDENT']),
+      status: a.enum(['ACTIVE', 'INACTIVE']),
+      createdAt: a.datetime(),
+      lastLoginAt: a.datetime(),
     })
-    .authorization((allow) => [allow.publicApiKey()]),
+    .authorization((allow) => [
+      // Only authenticated users can access
+      allow.authenticated(),
+      // Admin can do everything
+      allow.groups(['ADMIN']).to(['create', 'read', 'update', 'delete']),
+      // Students can only read their own record
+      allow.owner().to(['read', 'update']),
+    ]),
+
+  EmailForwarding: a
+    .model({
+      userId: a.string().required(),
+      gauntletEmail: a.string().required(),
+      forwardingEmail: a.string().required(),
+      status: a.enum(['ACTIVE', 'PAUSED']),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
+    })
+    .authorization((allow) => [
+      // Only authenticated users can access
+      allow.authenticated(),
+      // Admin can do everything
+      allow.groups(['ADMIN']).to(['create', 'read', 'update', 'delete']),
+      // Students can only manage their own forwarding settings
+      allow.owner().to(['create', 'read', 'update', 'delete']),
+    ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -19,7 +48,7 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: "apiKey",
+    defaultAuthorizationMode: "userPool",
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
     },
