@@ -1,13 +1,8 @@
 import { getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
-import { generateClient } from 'aws-amplify/api';
-import type { Schema } from '@/amplify/data/resource';
-import { Amplify } from 'aws-amplify';
-import config from '../../amplify_outputs.json';
+import { ensureAmplifyConfigured } from './amplify-config';
 
-// Configure Amplify
-Amplify.configure(config, {
-  ssr: true
-});
+// Ensure Amplify is configured
+ensureAmplifyConfigured();
 
 // Admin user ID from AWS Cognito
 const ADMIN_USER_ID = '640834f8-40b1-705a-06f7-b96562e999fc';

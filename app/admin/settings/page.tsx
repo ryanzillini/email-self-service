@@ -3,21 +3,18 @@
 import { useState, useEffect } from 'react';
 import { fetchUserAttributes } from 'aws-amplify/auth';
 import { signOut } from 'aws-amplify/auth';
-import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '@/amplify/data/resource';
-import config from '../../../amplify_outputs.json';
-import { LogOut, Settings, Shield, Save } from "lucide-react";
 import '../../dashboard/styles.css';
 import '../dashboard/admin-styles.css';
 import '../dashboard/fix-icons.css';
 import { isAdmin } from '../../utils/auth';
 import { useRouter } from 'next/navigation';
+import { ensureAmplifyConfigured } from '../../utils/amplify-config';
+import amplifyOutputs from '../../../amplify_outputs.json';
 
-// Configure Amplify
-Amplify.configure(config, {
-  ssr: true
-});
+// Ensure Amplify is configured
+ensureAmplifyConfigured();
 
 // Define admin settings type
 interface AdminSettings {
@@ -398,7 +395,6 @@ export default function AdminSettings() {
           <a href="/admin/settings" className="admin-nav-item active">Settings</a>
         </nav>
         <div className="admin-signout" onClick={handleSignOut}>
-          <LogOut className="admin-signout-icon" />
           Sign Out
         </div>
       </div>
@@ -416,7 +412,7 @@ export default function AdminSettings() {
             </div>
           </div>
           <div>
-            <Settings className="settings-icon" size={24} />
+            {/* Settings icon removed */}
           </div>
         </div>
         
@@ -430,7 +426,6 @@ export default function AdminSettings() {
           <div className="settings-card">
             <div className="settings-card-header">
               <h2 className="settings-card-title">
-                <Shield className="settings-card-icon" />
                 Admin Account Setup
               </h2>
             </div>
@@ -464,7 +459,6 @@ export default function AdminSettings() {
                   onClick={handleEnsureAdminAccount}
                   disabled={settings.isAdminAccountCreated && settings.isAdminRoleAssigned}
                 >
-                  <Save className="button-icon" />
                   {settings.isAdminAccountCreated ? 'Ensure Admin Role' : 'Create Admin Account'}
                 </button>
               </div>
@@ -483,12 +477,12 @@ export default function AdminSettings() {
               
               <div className="settings-item">
                 <div className="settings-item-label">Region</div>
-                <div className="settings-item-value">{config.data.aws_region}</div>
+                <div className="settings-item-value">{amplifyOutputs.data.aws_region}</div>
               </div>
               
               <div className="settings-item">
                 <div className="settings-item-label">API Endpoint</div>
-                <div className="settings-item-value">{config.data.url}</div>
+                <div className="settings-item-value">{amplifyOutputs.data.url}</div>
               </div>
               
               <div className="settings-actions">

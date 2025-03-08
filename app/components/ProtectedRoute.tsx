@@ -3,14 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCurrentUser } from 'aws-amplify/auth';
-import { Amplify } from 'aws-amplify';
-import config from '../../amplify_outputs.json';
 import { isAdmin, ensureUserInDatabase } from '../utils/auth';
+import { ensureAmplifyConfigured } from '../utils/amplify-config';
 
-// Configure Amplify
-Amplify.configure(config, {
-  ssr: true
-});
+// Ensure Amplify is configured
+ensureAmplifyConfigured();
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

@@ -3,15 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Authenticator } from '@aws-amplify/ui-react';
-import { Amplify } from 'aws-amplify';
 import { getCurrentUser } from 'aws-amplify/auth';
 import '@aws-amplify/ui-react/styles.css';
-import config from '../../amplify_outputs.json';
+import { ensureAmplifyConfigured } from '../utils/amplify-config';
 
-// Configure Amplify on the client side only
-Amplify.configure(config, {
-  ssr: true
-});
+// Ensure Amplify is configured
+ensureAmplifyConfigured();
 
 export default function LoginPage() {
   const router = useRouter();

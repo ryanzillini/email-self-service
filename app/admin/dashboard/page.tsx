@@ -3,21 +3,17 @@
 import { useState, useEffect } from 'react';
 import { getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
 import { signOut } from 'aws-amplify/auth';
-import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '@/amplify/data/resource';
-import config from '../../../amplify_outputs.json';
-import { Mail, Search, LogOut, Plus, Download, Upload, Trash2, Edit, User } from "lucide-react";
 import '../../dashboard/styles.css';
 import './admin-styles.css';
 import './fix-icons.css';
 import { isAdmin } from '../../utils/auth';
 import { useRouter } from 'next/navigation';
+import { ensureAmplifyConfigured } from '../../utils/amplify-config';
 
-// Configure Amplify
-Amplify.configure(config, {
-  ssr: true
-});
+// Ensure Amplify is configured
+ensureAmplifyConfigured();
 
 // Define user type based on the schema
 interface UserType {
@@ -567,7 +563,6 @@ export default function AdminDashboard() {
           <a href="/admin/settings" className="admin-nav-item">Settings</a>
         </nav>
         <div className="admin-signout" onClick={handleSignOut}>
-          <LogOut className="admin-signout-icon" />
           Sign Out
         </div>
       </div>
@@ -606,27 +601,26 @@ export default function AdminDashboard() {
         
         <div className="users-table-container">
           <div className="admin-actions">
-            <button 
-              className="admin-button import-button"
-              onClick={() => setShowImportDialog(true)}
-            >
-              <Upload className="button-icon" />
-              Import Users
-            </button>
-            <button 
-              className="admin-button export-button"
-              onClick={handleExportUsers}
-            >
-              <Download className="button-icon" />
-              Export Users
-            </button>
-            <button 
-              className="admin-button add-user-button"
-              onClick={() => setShowAddUserDialog(true)}
-            >
-              <Plus className="button-icon" />
-              Add User
-            </button>
+            <div className="action-buttons">
+              <button 
+                onClick={() => setShowImportDialog(true)}
+                className="import-button"
+              >
+                Import
+              </button>
+              <button 
+                onClick={handleExportUsers}
+                className="export-button"
+              >
+                Export
+              </button>
+              <button 
+                onClick={() => setShowAddUserDialog(true)}
+                className="add-button"
+              >
+                Add User
+              </button>
+            </div>
           </div>
           
           <table className="users-table">
@@ -651,16 +645,16 @@ export default function AdminDashboard() {
                   <td>
                     <div className="action-buttons">
                       <button 
-                        className="action-button edit-button"
                         onClick={() => handleEditUser(user)}
+                        className="edit-button"
                       >
-                        <Edit className="action-icon" />
+                        Edit
                       </button>
                       <button 
-                        className="action-button delete-button"
                         onClick={() => handleDeleteUser(user.id)}
+                        className="delete-button"
                       >
-                        <Trash2 className="action-icon" />
+                        Delete
                       </button>
                     </div>
                   </td>

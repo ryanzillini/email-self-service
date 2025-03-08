@@ -1,280 +1,271 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
-import { signOut } from 'aws-amplify/auth';
-import { Amplify } from 'aws-amplify';
-import config from '../../amplify_outputs.json';
-import { Mail, Search, Home, User, Shield, LogOut, Plus } from "lucide-react";
-import './styles.css';
+import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ensureAmplifyConfigured } from '../utils/amplify-config';
 
-// Configure Amplify
-Amplify.configure(config, {
-  ssr: true
-});
+// Ensure Amplify is configured
+ensureAmplifyConfigured();
 
-export default function StudentDashboard() {
-  const [userEmail, setUserEmail] = useState('');
-  const [forwardingEmail, setForwardingEmail] = useState('');
-  const [isActive, setIsActive] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [message, setMessage] = useState({ text: '', type: '' });
-  const [showAddEmailDialog, setShowAddEmailDialog] = useState(false);
-  const [newGauntletEmail, setNewGauntletEmail] = useState('');
+// Define interfaces for our data
+interface EmailForwarding {
+  id: string;
+  gauntletEmail: string;
+  forwardingEmail: string;
+  status: 'ACTIVE' | 'PAUSED';
+}
 
+export default function Dashboard() {
+  const [userEmail, setUserEmail] = useState<string>('');
+  const [forwardingEmails, setForwardingEmails] = useState<EmailForwarding[]>([]);
+  const [newEmail, setNewEmail] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load user data and forwarding emails on component mount
   useEffect(() => {
-    const fetchUserData = async () => {
+    async function loadUserData() {
       try {
-        // Get current user
-        const attributes = await fetchUserAttributes();
-        setUserEmail(attributes.email || '');
+        // Get user attributes from Cognito
+        const userAttributes = await fetchUserAttributes();
+        const email = userAttributes.email || '';
+        setUserEmail(email);
         
-        // For now, we'll use mock data instead of fetching from the database
-        setForwardingEmail('');
-        setIsActive(true);
-        
-        setIsLoading(false);
+        // Load forwarding emails from localStorage
+        const storedEmails = localStorage.getItem(`forwarding-emails-${email}`);
+        if (storedEmails) {
+          setForwardingEmails(JSON.parse(storedEmails));
+        } else {
+          // Initialize with empty array if no data exists
+          setForwardingEmails([]);
+        }
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error('Error loading user data:', error);
+        setError('Failed to load user data. Please refresh the page.');
+      } finally {
         setIsLoading(false);
       }
-    };
-    
-    fetchUserData();
+    }
+
+    loadUserData();
   }, []);
 
-  const handleSave = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    setIsSaving(true);
-    setMessage({ text: '', type: '' });
+  // Save forwarding emails to localStorage whenever they change
+  useEffect(() => {
+    if (userEmail && forwardingEmails.length > 0) {
+      localStorage.setItem(`forwarding-emails-${userEmail}`, JSON.stringify(forwardingEmails));
+    }
+  }, [forwardingEmails, userEmail]);
+
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      setError(null);
+      
+      // Simulate API call with a delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Saving settings:', forwardingEmails);
+      
+      // In a real implementation, we would save to a database
+      // For now, we're just using localStorage which is handled by the useEffect
+      
+      alert('Settings saved successfully!');
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      setError('Failed to save settings. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAddEmail = async () => {
+    if (!newEmail) return;
+    
+    // Simple validation
+    if (!newEmail.includes('@')) {
+      alert('Please enter a valid email address');
+      return;
+    }
+    
+    // Check for duplicates
+    if (forwardingEmails.some(email => email.forwardingEmail === newEmail)) {
+      alert('This email is already in your list');
+      return;
+    }
     
     try {
-      // For now, we'll just simulate a successful save
-      setTimeout(() => {
-        setMessage({ 
-          text: 'Email forwarding settings saved successfully!', 
-          type: 'success' 
-        });
-        setIsSaving(false);
-      }, 1000);
+      setIsSaving(true);
+      
+      // Create a new forwarding email
+      const newForwardingEmail: EmailForwarding = {
+        id: Date.now().toString(), // Simple ID generation
+        gauntletEmail: userEmail,
+        forwardingEmail: newEmail,
+        status: 'ACTIVE'
+      };
+      
+      // Add the new email to the state
+      setForwardingEmails([...forwardingEmails, newForwardingEmail]);
+      setNewEmail('');
     } catch (error) {
-      console.error('Error:', error);
-      setMessage({ 
-        text: 'Error saving settings. Please try again.', 
-        type: 'error' 
-      });
+      console.error('Error adding email:', error);
+      alert('Failed to add email. Please try again.');
+    } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleRemoveEmail = async (id: string) => {
+    try {
+      setIsSaving(true);
+      
+      // Remove the email from the state
+      setForwardingEmails(forwardingEmails.filter(email => email.id !== id));
+    } catch (error) {
+      console.error('Error removing email:', error);
+      alert('Failed to remove email. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleToggleActive = async (id: string) => {
+    try {
+      // Find the email to toggle
+      const emailToToggle = forwardingEmails.find(email => email.id === id);
+      if (!emailToToggle) return;
+      
+      // Toggle the status
+      const newStatus = emailToToggle.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE';
+      
+      // Update the state
+      setForwardingEmails(
+        forwardingEmails.map(email => 
+          email.id === id ? { ...email, status: newStatus } : email
+        )
+      );
+    } catch (error) {
+      console.error('Error toggling email status:', error);
+      alert('Failed to update email status. Please try again.');
     }
   };
 
   const handleSignOut = async () => {
     try {
       await signOut();
-      window.location.href = '/login'; // Redirect to login page after sign out
+      // Redirect happens automatically due to Amplify's auth configuration
     } catch (error) {
       console.error('Error signing out:', error);
     }
   };
 
-  const handleAddEmail = () => {
-    // This would handle the creation of a new Gauntlet email
-    // For now, just close the dialog
-    setShowAddEmailDialog(false);
-    setNewGauntletEmail('');
-    // Here you would add the API call to create a new email
-  };
-
   if (isLoading) {
-    return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-      </div>
-    );
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-container">
-        {/* Sidebar */}
-        <div className="sidebar">
-          <div className="logo-container">
-            <div className="logo-icon">
-              <Mail className="icon" />
-            </div>
-            <span className="logo-text">GauntletAI</span>
-          </div>
-          
-          <div className="search-container">
-            <div className="search-box">
-              <Search className="search-icon" />
-              <input 
-                type="text" 
-                placeholder="Search" 
-                className="search-input"
-              />
-            </div>
-          </div>
-          
-          <nav className="nav-menu">
-            <ul className="nav-list">
-              <li className="nav-item">
-                <a href="#" className="nav-link">
-                  <Home className="nav-icon" />
-                  Dashboard
-                </a>
-              </li>
-              <li className="nav-item">
-                <a href="#" className="nav-link">
-                  <User className="nav-icon" />
-                  Profile
-                </a>
-              </li>
-              <li className="nav-item active">
-                <a href="#" className="nav-link">
-                  <Shield className="nav-icon active-icon" />
-                  Account Security
-                </a>
-              </li>
-            </ul>
-          </nav>
-          
-          <div className="signout-container">
-            <button
-              onClick={handleSignOut}
-              className="signout-button"
-            >
-              <LogOut className="signout-icon" />
-              Sign Out
-            </button>
-          </div>
-        </div>
-        
-        {/* Main content */}
-        <div className="main-content">
-          <h1 className="page-title">Account Security</h1>
-          
-          <div className="section">
-            <h2 className="section-title">Account Information</h2>
-            
-            <div className="info-container">
-              <div className="info-item">
-                <div>
-                  <label className="info-label">Email address</label>
-                  <p className="info-value">{userEmail}</p>
-                  <p className="info-help">If you need to change your email address, please contact Support</p>
-                </div>
-              </div>
-              
-              <div className="info-item">
-                <div className="form-group">
-                  <label htmlFor="forwarding-email" className="info-label">Forward To</label>
-                  <input
-                    id="forwarding-email"
-                    type="email"
-                    value={forwardingEmail}
-                    onChange={(e) => setForwardingEmail(e.target.value)}
-                    placeholder="your-personal@email.com"
-                    className="form-input"
-                  />
-                  <p className="info-help">Enter the email address where you want to receive forwarded emails</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="section">
-            <div className="section-header">
-              <h2 className="section-title">Gauntlet Emails</h2>
-              <button 
-                onClick={() => setShowAddEmailDialog(true)}
-                className="add-button"
-              >
-                <Plus className="add-icon" />
-              </button>
-            </div>
-            
-            <div className="email-card">
-              <div className="email-card-content">
-                <div>
-                  <p className="email-address">{userEmail}</p>
-                  <p className="email-type">Primary Gauntlet Email</p>
-                </div>
-                <div className="toggle-container">
-                  <span className="toggle-label">Active</span>
-                  <label className="toggle">
-                    <input
-                      type="checkbox"
-                      checked={isActive}
-                      onChange={(e) => setIsActive(e.target.checked)}
-                    />
-                    <span className="toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="actions">
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="save-button"
-            >
-              {isSaving ? 'Saving...' : 'Save Settings'}
-            </button>
-          </div>
-          
-          {message.text && (
-            <div className={`message ${message.type === 'success' ? 'success' : 'error'}`}>
-              {message.text}
-            </div>
-          )}
-        </div>
+    <div className="container mx-auto p-4">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Email Forwarding Dashboard</h1>
+        <Button variant="outline" onClick={handleSignOut}>Sign Out</Button>
       </div>
       
-      {showAddEmailDialog && (
-        <div className="dialog-overlay">
-          <div className="dialog">
-            <div className="dialog-header">
-              <h3 className="dialog-title">Create New Gauntlet Email</h3>
-              <p className="dialog-description">Add a new email address to your Gauntlet account.</p>
-            </div>
-            <div className="dialog-content">
-              <label htmlFor="new-email" className="dialog-label">
-                New Email Address
-              </label>
-              <div className="email-input-group">
-                <input
-                  id="new-email"
-                  type="text"
-                  value={newGauntletEmail}
-                  onChange={(e) => setNewGauntletEmail(e.target.value)}
-                  placeholder="yourname"
-                  className="email-input"
-                />
-                <div className="email-domain">
-                  @gauntletai.com
-                </div>
-              </div>
-            </div>
-            <div className="dialog-footer">
-              <button 
-                onClick={() => setShowAddEmailDialog(false)}
-                className="cancel-button"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleAddEmail}
-                className="create-button"
-              >
-                Create Email
-              </button>
-            </div>
-          </div>
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
         </div>
       )}
+      
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Your Gauntlet Email</CardTitle>
+          <CardDescription>This is your primary Gauntlet email address</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-lg font-medium">{userEmail}</p>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Forwarding Email Addresses</CardTitle>
+          <CardDescription>
+            Add email addresses where you want to receive emails sent to your Gauntlet address
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {forwardingEmails.length > 0 ? (
+              forwardingEmails.map((email) => (
+                <div key={email.id} className="flex items-center justify-between p-3 border rounded">
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-3 h-3 rounded-full ${email.status === 'ACTIVE' ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                    <span>{email.forwardingEmail}</span>
+                  </div>
+                  <div className="space-x-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleToggleActive(email.id)}
+                    >
+                      {email.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={() => handleRemoveEmail(email.id)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No forwarding emails added yet.</p>
+            )}
+            
+            <div className="flex space-x-2 mt-4">
+              <div className="flex-1">
+                <Label htmlFor="new-email" className="sr-only">New Email</Label>
+                <Input
+                  id="new-email"
+                  type="email"
+                  placeholder="Add new email address"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                />
+              </div>
+              <Button onClick={handleAddEmail} disabled={isSaving}>Add Email</Button>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button 
+            onClick={handleSave} 
+            disabled={isSaving}
+            className="w-full"
+          >
+            {isSaving ? 'Saving...' : 'Save Settings'}
+          </Button>
+        </CardFooter>
+      </Card>
+      
+      <div className="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded">
+        <h3 className="text-lg font-semibold text-yellow-800 mb-2">Development Mode</h3>
+        <p className="text-yellow-700">
+          This application is currently using localStorage for data storage. To implement with Amplify Data:
+        </p>
+        <ol className="list-decimal ml-5 mt-2 text-yellow-700">
+          <li className="mb-1">Deploy the EmailForwarding model to the backend using <code className="bg-yellow-100 px-1 rounded">npx ampx sandbox</code> (requires AWS credentials)</li>
+          <li className="mb-1">Update the amplify_outputs.json file to include the EmailForwarding model</li>
+          <li className="mb-1">Replace the localStorage implementation with Amplify Data client calls</li>
+        </ol>
+      </div>
     </div>
   );
 } 
