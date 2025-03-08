@@ -16,6 +16,35 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <style>{`
+          /* Hide large SVG icons */
+          body > svg,
+          #__next > svg,
+          svg:not([class]),
+          svg[width="100%"],
+          svg[height="100%"] {
+            display: none !important;
+          }
+          
+          /* Hide duplicate layout elements */
+          body > div:first-child:not(.admin-layout):not(.dashboard) {
+            display: none !important;
+          }
+          
+          /* Hide any navigation elements that aren't part of our layout */
+          body > nav,
+          body > header:not(.admin-header) {
+            display: none !important;
+          }
+          
+          /* Hide any unwanted text elements */
+          body > div:not(.admin-layout):not(.dashboard) > h1,
+          body > div:not(.admin-layout):not(.dashboard) > h2 {
+            display: none !important;
+          }
+        `}</style>
+      </head>
       <body className={inter.className}>
         {children}
       </body>

@@ -8,6 +8,15 @@
   --border-color: #333333;
 }
 
+/* Hide large SVG icons at the top of the page */
+body > svg,
+#__next > svg,
+svg[width="100%"],
+svg[height="100%"],
+svg:not([class]):not([width="1rem"]):not([height="1rem"]) {
+  display: none !important;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;

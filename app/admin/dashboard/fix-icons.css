@@ -1,0 +1,60 @@
+/* Fix for large icons taking up space */
+
+/* Target all SVGs that don't have specific classes */
+svg:not([class]) {
+  display: none !important;
+}
+
+/* Target SVGs with specific dimensions */
+svg[width="100%"],
+svg[height="100%"],
+svg[width="1200"],
+svg[height="1200"],
+svg[width="800"],
+svg[height="800"] {
+  display: none !important;
+}
+
+/* Target SVGs directly under body or main containers */
+body > svg,
+#__next > svg,
+.dashboard > svg,
+.admin-layout > svg,
+main > svg,
+div > svg:first-child {
+  display: none !important;
+}
+
+/* Ensure proper layout */
+.dashboard, .admin-layout {
+  position: relative;
+  z-index: 10;
+}
+
+/* Hide any large mail icons */
+svg[viewBox*="0 0 1200"],
+svg[viewBox*="0 0 800"],
+svg[viewBox*="0 0 600"],
+svg[viewBox*="0 0 512"] {
+  display: none !important;
+}
+
+/* Target email icon specifically */
+svg path[d*="M12 19.95Q9.975 19.95 8.2 19.288Q6.425 18.625 5.075 17.275Q3.725 15.925 3.062 14.15Q2.4 12.375 2.4 10.35Q2.4 8.325 3.062 6.55Q3.725 4.775 5.075 3.425Q6.425 2.075 8.2 1.412Q9.975 0.75 12 0.75Q14.025 0.75 15.8 1.412Q17.575 2.075 18.925 3.425Q20.275 4.775 20.938 6.55Q21.6 8.325 21.6 10.35Q21.6 12.375 20.938 14.15Q20.275 15.925 18.925 17.275Q17.575 18.625 15.8 19.288Q14.025 19.95 12 19.95Z"] {
+  display: none !important;
+}
+
+/* Hide duplicate layout elements */
+body > div:first-child:not(.admin-layout):not(.dashboard) {
+  display: none !important;
+}
+
+/* Hide any elements with GauntletAI text that aren't part of our layout */
+body > div:not(.admin-layout) > div:first-child:contains("GauntletAI") {
+  display: none !important;
+}
+
+/* Hide any elements with Admin Portal text that aren't part of our layout */
+body > div:not(.admin-layout) > div:contains("Admin Portal") {
+  display: none !important;
+} 

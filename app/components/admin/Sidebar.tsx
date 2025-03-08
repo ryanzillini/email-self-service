@@ -55,21 +55,6 @@ export function Sidebar() {
       label: 'Dashboard',
     },
     {
-      href: '/admin/users',
-      icon: <UsersIcon className="w-6 h-6" />,
-      label: 'Users',
-    },
-    {
-      href: '/admin/forwarding',
-      icon: <EnvelopeIcon className="w-6 h-6" />,
-      label: 'Email Forwarding',
-    },
-    {
-      href: '/admin/activity',
-      icon: <DocumentTextIcon className="w-6 h-6" />,
-      label: 'Activity Log',
-    },
-    {
       href: '/admin/settings',
       icon: <Cog6ToothIcon className="w-6 h-6" />,
       label: 'Settings',

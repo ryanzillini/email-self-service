@@ -1,13 +1,30 @@
 /* Dashboard Layout */
+
+/* Hide large SVG icons at the top of the page */
+body > svg,
+#__next > svg,
+.dashboard > svg,
+svg[width="100%"],
+svg[height="100%"],
+svg:not([class]):not([width="1rem"]):not([height="1rem"]) {
+  display: none !important;
+}
+
 .dashboard {
   min-height: 100vh;
   background-color: var(--background-color);
   color: var(--text-color);
+  display: flex;
+  position: relative;
+  z-index: 1; /* Ensure dashboard content is above any unwanted elements */
 }
 
 .dashboard-container {
   display: flex;
   min-height: 100vh;
+  width: 100%;
+  position: relative;
+  z-index: 2; /* Ensure container is above any unwanted elements */
 }
 
 /* Loading Spinner */
@@ -42,6 +59,7 @@
   padding: 1rem;
   border-right: 1px solid var(--border-color);
   position: relative;
+  flex-shrink: 0;
 }
 
 .logo-container {
