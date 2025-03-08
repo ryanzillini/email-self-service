@@ -321,6 +321,7 @@ export default function AdminSettings() {
               const forwardingEmail = userData.gauntletEmail.replace('gauntletai.com', 'gmail.com');
               await client.models.EmailForwarding.create({
                 userId: newUser.id,
+                gauntletEmail: userData.gauntletEmail,
                 forwardingEmail: forwardingEmail,
                 status: 'ACTIVE' as 'ACTIVE',
                 createdAt: new Date().toISOString(),

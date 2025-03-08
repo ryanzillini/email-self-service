@@ -1,0 +1,92 @@
+2025-03-08T00:03:47.426Z [INFO]: # Cloning repository: git@github.com:ryanzillini/email-self-service.git
+2025-03-08T00:03:48.093Z [INFO]: 
+2025-03-08T00:03:48.094Z [INFO]: Cloning into 'email-self-service'...
+2025-03-08T00:03:48.095Z [INFO]: # Switching to commit: 9dd20d48cd1eae8cd6e9597afbb0cc3222e9514b
+2025-03-08T00:03:48.114Z [INFO]: Note: switching to '9dd20d48cd1eae8cd6e9597afbb0cc3222e9514b'.
+                                 You are in 'detached HEAD' state. You can look around, make experimental
+                                 changes and commit them, and you can discard any commits you make in this
+                                 state without impacting any branches by switching back to a branch.
+                                 If you want to create a new branch to retain commits you create, you may
+                                 do so (now or later) by using -c with the switch command. Example:
+                                 git switch -c <new-branch-name>
+                                 Or undo this operation with:
+                                 git switch -
+                                 Turn off this advice by setting config variable advice.detachedHead to false
+                                 HEAD is now at 9dd20d4 dashboards
+2025-03-08T00:03:48.200Z [INFO]: Successfully cleaned up Git credentials
+2025-03-08T00:03:48.200Z [INFO]: # Checking for Git submodules at: /codebuild/output/src2334875036/src/email-self-service/.gitmodules
+2025-03-08T00:03:48.209Z [INFO]: # Retrieving environment cache...
+2025-03-08T00:03:48.284Z [INFO]: # Retrieved environment cache
+2025-03-08T00:03:48.284Z [INFO]: ---- Setting Up SSM Secrets ----
+2025-03-08T00:03:48.284Z [INFO]: SSM params {"Path":"/amplify/d3319pbkysx5z4/main/","WithDecryption":true}
+2025-03-08T00:03:49.263Z [INFO]: # No package override configuration found.
+2025-03-08T00:03:49.267Z [INFO]: # Retrieving cache...
+2025-03-08T00:04:40.310Z [INFO]: # Extracting cache...
+2025-03-08T00:05:09.261Z [INFO]: # Extraction completed
+2025-03-08T00:05:09.566Z [INFO]: # Retrieved cache
+2025-03-08T00:05:13.896Z [INFO]: ## Starting Backend Build
+                                 # Starting phase: build
+                                 # Executing command: npm ci --cache .npm --prefer-offline
+2025-03-08T00:06:09.396Z [WARNING]: npm
+2025-03-08T00:06:09.401Z [WARNING]: WARN deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+2025-03-08T00:06:09.500Z [WARNING]: npm WARN
+2025-03-08T00:06:09.501Z [WARNING]: deprecated @babel/plugin-proposal-class-properties@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-class-properties instead.
+2025-03-08T00:06:09.691Z [WARNING]: npm
+2025-03-08T00:06:09.692Z [WARNING]: WARN deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+2025-03-08T00:06:09.909Z [WARNING]: npm
+2025-03-08T00:06:09.909Z [WARNING]: WARN deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+2025-03-08T00:06:09.945Z [WARNING]: npm
+2025-03-08T00:06:09.945Z [WARNING]: WARN deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+2025-03-08T00:06:09.967Z [WARNING]: npm
+2025-03-08T00:06:09.967Z [WARNING]: WARN deprecated @babel/plugin-proposal-object-rest-spread@7.20.7: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-object-rest-spread instead.
+2025-03-08T00:06:18.554Z [WARNING]: npm
+2025-03-08T00:06:18.560Z [WARNING]: WARN deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+2025-03-08T00:06:31.082Z [INFO]: added 1252 packages, and audited 1633 packages in 1m
+2025-03-08T00:06:31.087Z [INFO]: 145 packages are looking for funding
+                                 run `npm fund` for details
+2025-03-08T00:06:31.090Z [INFO]: 4 vulnerabilities (1 low, 2 moderate, 1 high)
+                                 To address issues that do not require attention, run:
+                                 npm audit fix
+                                 To address all issues (including breaking changes), run:
+                                 npm audit fix --force
+                                 Run `npm audit` for details.
+2025-03-08T00:06:31.147Z [INFO]: # Executing command: npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+2025-03-08T00:06:40.109Z [INFO]: NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+                                 32775	(cli): CLI versions and CDK library versions have diverged
+                                 Overview: Starting in CDK 2.179.0, CLI versions will no longer be in
+                                 lockstep with CDK library versions. CLI versions will now be
+                                 released as 2.1000.0 and continue with 2.1001.0, etc.
+                                 Affected versions: cli: >=2.0.0 <=2.1005.0
+                                 More information at: https://github.com/aws/aws-cdk/issues/32775
+                                 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 32775".
+2025-03-08T00:06:45.505Z [INFO]: 
+2025-03-08T00:06:45.509Z [INFO]: InvalidSchemaError: Unable to find associated relationship definition in User for EmailForwarding.gauntletEmail: User @belongsTo(references: ['gauntletEmail'])
+                                 Resolution: Check your data schema definition for syntax and type errors.
+                                 Cause: Unable to find associated relationship definition in User for EmailForwarding.gauntletEmail: User @belongsTo(references: ['gauntletEmail'])
+2025-03-08T00:06:45.509Z [WARNING]: ampx pipeline-deploy
+                                    Command to deploy backends in a custom CI/CD pipeline. This command is not inten
+                                    ded to be used locally.
+                                    Options:
+                                    --debug            Print debug logs to the console
+                                    [boolean] [default: false]
+                                    --branch           Name of the git branch being deployed
+                                    [string] [required]
+                                    --app-id           The app id of the target Amplify app[string] [required]
+                                    --outputs-out-dir  A path to directory where amplify_outputs is written. I
+                                    f not provided defaults to current process working dire
+                                    ctory.                                         [string]
+                                    --outputs-version  Version of the configuration. Version 0 represents clas
+                                    sic amplify-cli config file amplify-configuration and 1
+                                    represents newer config file amplify_outputs
+                                    [string] [choices: "0", "1", "1.1", "1.2", "1.3"] [default: "1.3"]
+                                    --outputs-format   amplify_outputs file format
+                                    [string] [choices: "mjs", "json", "json-mobile", "ts", "dart"]
+                                    -h, --help             Show help                                     [boolean]
+2025-03-08T00:06:45.646Z [ERROR]: !!! Build failed
+2025-03-08T00:06:45.646Z [INFO]: Please read more about Amplify Hosting's support for SSR frameworks to find if your build failure is related to an unsupported feature: https://docs.aws.amazon.com/amplify/latest/userguide/amplify-ssr-framework-support.html. You may also find this troubleshooting guide useful: https://docs.aws.amazon.com/amplify/latest/userguide/troubleshooting-ssr-deployment.html
+2025-03-08T00:06:45.646Z [ERROR]: !!! Error: Command failed with exit code 1
+2025-03-08T00:06:45.646Z [INFO]: # Starting environment caching...
+2025-03-08T00:06:45.646Z [INFO]: # Uploading environment cache artifact...
+2025-03-08T00:06:45.728Z [INFO]: # Uploaded environment cache artifact
+2025-03-08T00:06:45.728Z [INFO]: # Environment caching completed
+

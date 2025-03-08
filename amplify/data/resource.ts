@@ -27,7 +27,7 @@ const schema = a.schema({
   EmailForwarding: a
     .model({
       userId: a.string().required(),
-      gauntletEmail: a.belongsTo('User', ['gauntletEmail']),
+      gauntletEmail: a.string().required(),
       forwardingEmail: a.string().required(),
       status: a.enum(['ACTIVE', 'PAUSED']),
       createdAt: a.datetime(),

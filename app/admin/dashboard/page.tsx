@@ -283,6 +283,7 @@ export default function AdminDashboard() {
         const forwardingStatus = editingUser.status === 'PAUSED' ? 'PAUSED' : 'ACTIVE';
         await client.models.EmailForwarding.create({
           userId: editingUser.id,
+          gauntletEmail: editingUser.gauntletEmail,
           forwardingEmail: editingUser.forwardingEmail,
           status: forwardingStatus,
           createdAt: new Date().toISOString(),
